@@ -1,0 +1,15 @@
+{
+  "name": "e-comm",
+  "version": "1.0.0",
+  "description": "e comm project",
+  "license": "ISC",
+  "author": "me",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "test": "run"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.9"
+  }
+}
