@@ -35,8 +35,9 @@ const userSchema=new mongoose.Schema(
             type:String
         },
         orderHistory:[
-            {type:Schema.Types.ObjectId,
-            ref:"Order"
+            {
+                type:Schema.Types.ObjectId,
+                ref:"Order"
             }
         ],
         password:{
