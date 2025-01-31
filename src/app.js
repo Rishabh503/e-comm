@@ -33,3 +33,6 @@ app.use("/api/v1/users",userRouter)
 import { categoryRouter } from "./routers/category.route.js";
 app.use("/api/v1/categories",categoryRouter);
 
+import { productRouter } from "./routers/product.routes.js";
+app.use("/api/v1/products",productRouter)
+
