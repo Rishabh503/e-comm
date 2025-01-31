@@ -1,6 +1,6 @@
-import { ApiError } from "../utils/ApiError.js";
-import {ApiResponse} from "../utils/ApiResponse.js"
 import { User } from "../models/user.model.js";
+import { ApiError } from "../utils/ApiError.js";
+import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { uploadOnCLoudinary } from "../utils/cloudinary.js";
 
@@ -151,4 +151,58 @@ export const loggoutUser=asyncHandler(async (req,res)=>{
     .clearCookie("accessToken",options)
     .clearCookie("refreshToken",options)
     .json(new ApiResponse(200,{},"User gaya ie logout"))
+})
+
+export const changeCurrentPassword=asyncHandler(async (req,res)=>{
+    const {oldPassword,newPassword}=req.body;
+    // console.log(req.body)
+    if(!oldPassword || !newPassword) throw new ApiError(401,"fill all fields");
+    // console.log(req.user)
+    console.log("Token from request:", req.cookies?.accessToken || req.header("Authorization"));
+    console.log(req.user)
+    const userid=await req.user?._id;
+    console.log(userid)
+    const user= await User.findById(userid)
+
+    if(!user) throw new ApiError(401,"user finding error")
+
+    const validOldPassword=await user.isPasswordCorrect(oldPassword);
+    if(!validOldPassword) throw new ApiError(401,"old password is wronfg")
+
+    user.password=newPassword;
+
+    await user.save({validateBeforeSave:false});
+
+    return res.status(201)
+    .json(new ApiResponse(200,{},"password changed succesfully"))
+
+
+})
+
+export const changeAvatar=asyncHandler(async (req,res)=>{
+    // get the data 
+    const newPhotoLocalPath=await req.file?.path
+    if(!newPhotoLocalPath) throw new ApiError(401,"photo not found")
+
+    const newUpload=await uploadOnCLoudinary(newPhotoLocalPath);
+    console.log(newUpload.url)
+    if(!newUpload) throw new ApiError(401,"error uploading on cloudinary")
+
+    const user=await User.findByIdAndUpdate(req.user._id,
+        {
+            $set:{
+                avatarUrl:newUpload.url
+            }
+        }
+    ).select("-password -refreshToken")
+    if(!user) throw new ApiError(401,"couldnt get the user check  login also ")
+
+    return res.status(200).json(new ApiResponse(200,user,"photo changed done "))
+})
+
+export const getCurrentUser=asyncHandler(async (req,res)=>{
+    const user=await User.findById(req.user._id).select("-password -refreshToken")
+    if(!user) throw new ApiError(404,"user not found")
+    
+    return res.status(200).json(new ApiResponse(200,user,"he is the use "))
 })
