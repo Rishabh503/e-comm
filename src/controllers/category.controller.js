@@ -35,3 +35,30 @@ export const getAllCategories=asyncHandler(async(req,res)=>{
     const allCategroies=await Category.find()
     return res.status(200).json(new ApiResponse(200,allCategroies,"these are categories"))
 })
+
+export const updateCategory=asyncHandler(async(req,res)=>{
+    const categoryName=req.params.categoryName;
+    console.log(categoryName)
+    if(!categoryName) throw new ApiError(401,"category name not got")
+
+    const category=await Category.findOne({name:categoryName})
+    console.log(category)
+    if(!category) throw new ApiError(401,"category with this name doesnt exit")
+
+
+    const {newName,newDescription}=req.body
+    category.name=newName;category.description=newDescription;
+    await category.save({validateBeforeSave:false});
+
+    return res.status(200).json(new ApiResponse(200,category,"category is updated"))
+})
+
+export const getCategory=asyncHandler(async(req,res)=>{
+    const categoryName=req.query.categoryName
+    if(!categoryName) throw new ApiError(401,"error in extracting category name from the url ")
+    // const category=
+    const category=await Category.findOne({name:categoryName})
+    if(!category) throw new ApiError(401,"error in extracting category or category not found")
+
+    return res.status(200).json(new ApiResponse(200,category,"under development"))
+})
