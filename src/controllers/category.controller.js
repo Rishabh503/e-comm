@@ -12,7 +12,7 @@ export const createCategory = asyncHandler(async (req,res)=>{
 
     const existedCategory=await Category.findOne({name} )
   
-    console.log(allCategroies)
+    // console.log(allCategroies)
     
     if(existedCategory) throw new ApiError(400,"category already found")
 

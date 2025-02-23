@@ -22,7 +22,11 @@ export const uploadOnCLoudinary= async (localfilepath)=>{
            return response;
     } catch (error) {
 
-        // yaha ake ek br unysnc krdena if sb works 
+        // yaha ake ek br unysnc krdena if sb works
+         
+         
+        fs.unlinkSync(localfilepath)
+
         console.log("error in uploadOnCloudinary  error ::  ", error)
     }
 

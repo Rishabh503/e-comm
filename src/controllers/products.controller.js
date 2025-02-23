@@ -56,3 +56,38 @@ export const addProduct=asyncHandler(async(req,res)=>{
 
 })
 
+
+// sbse pehle humne wo category in the url liya wo bhi as normal param by :categoryName
+// then uske bd humne uske base pe wo category fetch ki 
+// then uske bd humne category se sare products ki id leli 
+// then uske bd humne sari ids se wo products ki info fetch krli 
+// and har step pe sutiable errror laga diye the so that we know error generate kaha se hua and 
+// alos humne har point pe cosnole log bhi kiya tha to get the info of this 
+export const allProducts=asyncHandler(async(req,res)=>{
+
+    const categoryName= req.params.categoryName;
+    console.log(categoryName)
+    if(!categoryName) throw new ApiError(401,"category not found")
+
+    const cat=await Category.findOne({name:categoryName})
+    if(!cat) throw new ApiError(401,"caat id nhi milri bhai ko ")
+    
+    // console.log(cat._id)
+    // console.log(cat)
+    // const allProducts=await Product.findById(catId._id)
+    // if(!allProducts) throw new ApiError(400,"no category found or error in finding products")
+        
+    const allProductsID=cat.products;
+    // console.log(allProducts)
+    console.log("products info")
+    const allProducts = await Promise.all(
+        allProductsID.map((async (prod)=>{
+            return await Product.findById(prod)
+        })
+    ))
+    
+    console.log(allProducts)
+
+    return res.status(200).json(new ApiResponse(200,allProducts,"all product shave been fetched succesfully "))
+})
+

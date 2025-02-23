@@ -13,4 +13,4 @@ productRouter.route("/addProduct").post(upload.fields([
         }
     ]),addProduct)
 
-    productRouter.route("/showAllProducts").post(allProducts)
+    productRouter.route("/showAllProducts/:categoryName").get(allProducts)
