@@ -1,7 +1,7 @@
 import express from "express"
 import cors from "cors"
 import cookieParser from "cookie-parser";
-
+import { ApiError } from "./utils/ApiError.js";
 
 
 export const app=express();
@@ -36,3 +36,26 @@ app.use("/api/v1/categories",categoryRouter);
 import { productRouter } from "./routers/product.routes.js";
 app.use("/api/v1/products",productRouter)
 
+app.use((err, req, res, next) => {
+    // console.error("Global Error Handler:", err);
+    // console.log("Error Type:", err.constructor.name);
+    // console.log("Instance of ApiError:", err instanceof ApiError);
+    // console.log("Full Error Object:", JSON.stringify(err, Object.getOwnPropertyNames(err), 2));
+
+    res.setHeader("Content-Type", "application/json");
+
+    if (err instanceof ApiError) {
+        return res.status(err.statusCode).json({
+            success: false,
+            message: err.message,
+            errors: err.errors || [],
+            statusCode: err.statusCode,
+        });
+    }
+
+    res.status(500).json({
+        success: false,
+        message: "Internal Server Error",
+        error: err.message,
+    });
+});
