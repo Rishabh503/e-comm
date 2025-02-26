@@ -9,6 +9,10 @@ const billSchema=new mongoose.Schema({
             type:Number,
             required:true
         },
+        date:{
+            type:Date,
+            required:true
+        },
         contact:{
             type:Number,
             required:true

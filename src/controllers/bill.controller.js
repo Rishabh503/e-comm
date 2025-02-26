@@ -46,9 +46,9 @@ export const createMultipleReminders=async(biilNo,date,status,gap,warranty)=>{
 
 export const createNewBill=asyncHandler(async(req,res)=>{
     // console.log(req.body)
-    const {billTo,amount,contact,email,category,status,warranty,remValue1}=req.body;
+    const {billTo,amount,contact,email,category,date,status,warranty,remValue1}=req.body;
     // console.log(req.body,billTo)
-    if(!billTo || !amount  || !contact ||!email || !category || !status || !warranty) {throw new ApiError(401,"all fields are required")}
+    if(!billTo || !amount ||!date || !contact  ||!email || !category || !status || !warranty) {throw new ApiError(401,"all fields are required")}
 
     const billedUser=await User.findOne({username:billTo})
     if(!billedUser) throw new ApiError(401,"error in finding user or user doesnt exists")
@@ -65,6 +65,7 @@ export const createNewBill=asyncHandler(async(req,res)=>{
         category:category._id,
         status:status,
         warranty:warranty,
+        date:date
     })
     const createdBill =await Bill.findById(bill._id)
     if(!createdBill) throw new ApiError(401,"error creating a bill")
@@ -73,7 +74,7 @@ export const createNewBill=asyncHandler(async(req,res)=>{
     // const reminderOne= await createNewReminder(bill._id,createAt,status);
     // console.log(reminderOne);
 
-    const remindersArray=await createMultipleReminders(bill._id,createAt,status,remValue1,warranty);
+    const remindersArray=await createMultipleReminders(bill._id,date,status,remValue1,warranty);
     console.log("from second methods",remindersArray)
 
     console.log("bill before reminders",bill)
