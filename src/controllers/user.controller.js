@@ -101,7 +101,7 @@ export const login = asyncHandler(async (req,res)=>{
     if(!email || !password) throw new ApiError(401,"fill all fields")
 
     const user=await User.findOne({email});
-    if(!user) throw new ApiError(400,"error while gettinf user here in login")
+    if(!user) throw new ApiError(400,"user with these credentials doesnt exists")
     
     const passwordValid=await user.isPasswordCorrect(password);
 
