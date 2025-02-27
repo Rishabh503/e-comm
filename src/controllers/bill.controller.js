@@ -39,20 +39,30 @@ export const createMultipleReminders = async (billNo, date, status, gap, warrant
     const warrantyMonths = parseInt(warranty) * 12;
     const gapMonths = parseInt(gap);
     
-    for (let i = gapMonths; i < warrantyMonths; i += gapMonths) {
+    console.log("Starting creation with:", {
+        startDate: startDate.toISOString(),
+        warrantyMonths,
+        gapMonths
+    });
+    
+    for (let i = 0; i < warrantyMonths; i += gapMonths) {
         // Create a new date object for each reminder
         const reminderDate = new Date(startDate);
+        
+        // Add months - this should automatically handle year transitions
         reminderDate.setMonth(startDate.getMonth() + i);
+        
+        // Verify date calculation
+        console.log(`Adding ${i} months to ${startDate.toISOString()} produces ${reminderDate.toISOString()}`);
         
         const reminder = await createNewReminder(billNo, reminderDate, status);
         
-        // console.log("Reminder No:", Math.floor(i / gapMonths) + 1, "Date:", reminderDate.toISOString());
+        console.log("Reminder No:", Math.floor(i / gapMonths) + 1, "Date:", reminderDate.toISOString());
         remindersAll.push(reminder);
     }
 
     return remindersAll;
 };
-
 
 
 

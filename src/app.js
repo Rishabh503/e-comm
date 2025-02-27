@@ -37,6 +37,8 @@ import { productRouter } from "./routers/product.routes.js";
 app.use("/api/v1/products",productRouter)
 import {billRouter} from "./routers/bill.route.js"
 app.use("/api/v1/bills",billRouter)
+import {visitRouter} from "./routers/visit.route.js"
+app.use("/api/v1/visits",visitRouter)
 
 app.use((err, req, res, next) => {
     console.error("Global Error Handler:", err);

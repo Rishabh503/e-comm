@@ -20,6 +20,11 @@ const reminderSchema=new Schema({
         status:{
             type:String,
             required:true
+        },
+        visit:{
+            type:Schema.Types.ObjectId,
+            ref:"Visit"
+
         }
 },{timestamps:true})
 
