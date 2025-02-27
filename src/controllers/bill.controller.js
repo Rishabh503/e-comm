@@ -31,24 +31,35 @@ export const createNewReminder=async(billNo,date,status,)=>{
         }
 }
 
-export const createMultipleReminders=async(biilNo,date,status,gap,warranty)=>{
-    let reminders=[];
-    let i=gap;
-    let newDate=new Date(date);
-    while(i<warranty*12){
+export const createMultipleReminders = async (billNo, date, status, gap, warranty) => {
+    let remindersAll = [];
+    const startDate = new Date(date); // Original start date
+    
+    // Convert warranty and gap to numbers if they're strings
+    const warrantyMonths = parseInt(warranty) * 12;
+    const gapMonths = parseInt(gap);
+    
+    for (let i = gapMonths; i < warrantyMonths; i += gapMonths) {
+        // Create a new date object for each reminder
+        const reminderDate = new Date(startDate);
+        reminderDate.setMonth(startDate.getMonth() + i);
         
-        newDate.setMonth(newDate.getMonth()+gap)
-        const reminder=await createNewReminder(biilNo,newDate,status);
-        reminders=[reminder,...reminders]
-        i=i+gap;
+        const reminder = await createNewReminder(billNo, reminderDate, status);
+        
+        // console.log("Reminder No:", Math.floor(i / gapMonths) + 1, "Date:", reminderDate.toISOString());
+        remindersAll.push(reminder);
     }
-    return reminders;
-}
+
+    return remindersAll;
+};
+
+
+
 
 export const createNewBill=asyncHandler(async(req,res)=>{
     // console.log(req.body)
     const {billTo,amount,contact,email,category,date,status,warranty,remValue1}=req.body;
-    // console.log(req.body,billTo)
+    console.log(req.body)
     if(!billTo || !amount ||!date || !contact  ||!email || !category || !status || !warranty) {throw new ApiError(401,"all fields are required")}
 
     const billedUser=await User.findOne({username:billTo})
@@ -75,10 +86,11 @@ export const createNewBill=asyncHandler(async(req,res)=>{
     // const reminderOne= await createNewReminder(bill._id,createAt,status);
     // console.log(reminderOne);
 
+    // biilNo,date,status,gap,warranty
     const remindersArray=await createMultipleReminders(bill._id,date,status,remValue1,warranty);
-    console.log("from second methods",remindersArray)
+    // console.log("from second methods",remindersArray)
 
-    console.log("bill before reminders",bill)
+    // console.log("bill before reminders",bill)
     bill.reminder.push(...remindersArray);
     await bill.save();
     // await Bill.findByIdAndUpdate(
@@ -88,7 +100,7 @@ export const createNewBill=asyncHandler(async(req,res)=>{
     // );
     
 
-    console.log("bill after save",bill)
+    // console.log("bill after save",bill)
     // console.log(typeof createAt,createAt,createAt instanceof Date)
     // console.log(createdBill,createdBill.createdAt);
 
