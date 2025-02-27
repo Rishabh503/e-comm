@@ -6,6 +6,9 @@ const visitSchema=new mongoose.Schema(
            type:Schema.Types.ObjectId,
             ref:"User"
         },
+        name:{
+            type:String
+        },
         visitedBy:{
             type:String,
             required:true
@@ -20,6 +23,14 @@ const visitSchema=new mongoose.Schema(
         reminderReference:{
             type:Schema.Types.ObjectId,
             ref:"Reminder"
+        },
+        complaintReference:{
+            type:Schema.Types.ObjectId,
+            ref:"Complaint"
+        },
+        enquiryReference:{
+             type:Schema.Types.ObjectId,
+            ref:"Enquiry"
         },
         status:{
             type:String,
