@@ -5,6 +5,7 @@ import { Reminder } from "../models/reminder.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
+import mongoose from "mongoose";
 
 // export const createNewReminder=asyncHandler(async(_,res)=>{
 
@@ -116,3 +117,21 @@ export const deleteAllData = asyncHandler(async (req, res) => {
 
     return res.status(200).json(new ApiResponse(200, null, "All data deleted successfully"));
 });
+
+
+export const showBill=asyncHandler(async (req,res)=>{
+    const billId=req.params.billId;
+
+    // console.log(billId);
+    // console.log(mongoose.isValidObjectId(billId))
+
+    const billObjId=new mongoose.Types.ObjectId(billId)
+
+    if(!billId) throw new ApiError(401,"couldnt receieve bill no ")
+    // const bill=await Bill.findById(Number(billId));??
+    const bill = await Bill.findOne({_id:billObjId})
+    if(!bill) throw new ApiError(401,"couldnt extract bill on the basis of bill id ")
+    // console.log(bill);
+    return res.status(200).json(new ApiResponse(200,bill,"bill got succesfully"))
+    
+})
