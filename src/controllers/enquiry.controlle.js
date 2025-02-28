@@ -5,6 +5,7 @@ import { Visit } from "../models/visit.model.js"
 import { ApiError } from "../utils/ApiError.js"
 import { ApiResponse } from "../utils/ApiResponse.js"
 import { asyncHandler } from "../utils/asyncHandler.js"
+import { uploadOnCLoudinary } from "../utils/cloudinary.js"
 
 
 export const newEnquiry=asyncHandler(async(req,res)=>{
@@ -119,5 +120,43 @@ export const getEnquiry=asyncHandler(async(req,res)=>{
     if(!enquiry) throw new ApiError(401,"error geeting enquiry data  ")
 
     return res.status(200).json(new ApiResponse(200,enquiry,"aa gyi enquiry"))
+
+})
+
+export const newQuotation = asyncHandler(async(req,res)=>{
+    const enquiryId=req.params.enquiryId;
+    if(!enquiryId) throw new ApiError(401,"enquuiry id in backend not recieved")
+
+
+    const enquiry = await Enquiry.findById(enquiryId);
+    if(!enquiry) throw new ApiError(401,"enquuiry fetching from the db failed")
+        console.log(enquiry)
+    const {price,date}=req.body
+    if(!price||!date) throw new ApiError(401,"all data is not recieved")
+    //steps to get the url of file
+    //get the localpath of the 
+    const fileLocalPath=req.file?.path 
+
+    if(!fileLocalPath) throw new ApiError(401,"file local path wasa not recieved")
+
+    const fileUpload=await uploadOnCLoudinary(fileLocalPath);
+
+    if(!fileUpload) throw new ApiError(402,"upload on cloudinary has failed")
+
+    console.log(fileUpload?.url)
+
+    const quotation={
+        price:price,
+        fileUrl: fileUpload.secure_url || fileUpload.url || "",
+        date:date,
+    }
+    // enquiry.quotations=[];
+    enquiry.quotations=enquiry.quotations.push(quotation);
+    await enquiry.save({validateBeforeSave:false})
+    console.log(enquiry.quotations);
+
+    return res.status(201).json(new ApiResponse(200,quotation,"quotation has been made"));
+
+
 
 })
