@@ -111,3 +111,13 @@ export const newVisit=asyncHandler(async(req,res)=>{
         return res.status(200).json(new ApiResponse(200,createdVisit,"visit has been made "))
 
 })
+
+export const getEnquiry=asyncHandler(async(req,res)=>{
+    const enquiryId=req.params.enquiryId;
+    const enquiry=await Enquiry.findById(enquiryId).populate("followUps").populate("visits");
+
+    if(!enquiry) throw new ApiError(401,"error geeting enquiry data  ")
+
+    return res.status(200).json(new ApiResponse(200,enquiry,"aa gyi enquiry"))
+
+})
