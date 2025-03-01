@@ -127,7 +127,7 @@ export const getAllBills=asyncHandler(async(req,res)=>{
     .populate("reminder")
    
     if(!allBills) throw new ApiError(402,"erroe getting bills from the db")
-    console.log(allBills);
+    // console.log(allBills);
     return res.status(200).json( new ApiResponse(200,allBills,"bills fetched done"))
 })
 

@@ -43,8 +43,10 @@ import {visitRouter} from "./routers/visit.route.js"
 app.use("/api/v1/visits",visitRouter)
 
 import {enquiryRouter} from "./routers/enquiry.route.js"
-app.use('/api/v1/enquiry',enquiryRouter)
 
+app.use('/api/v1/enquiry',enquiryRouter)
+import { complaintRouter } from "./routers/complaint.route.js";
+app.use('/api/v1/complaint',complaintRouter)
 app.use((err, req, res, next) => {
     console.error("Global Error Handler:", err);
     console.log("Error Type:", err.constructor.name);

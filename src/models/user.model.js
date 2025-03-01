@@ -47,7 +47,13 @@ const userSchema=new mongoose.Schema(
         },
         refreshToken:{
             type:String
-        }
+        },
+        complaints:[
+            {
+                type:Schema.Types.ObjectId,
+                ref:"Complaint"
+            }
+        ]
 },{timestamps:true}
 )
 

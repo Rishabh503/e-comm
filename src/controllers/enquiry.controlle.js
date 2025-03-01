@@ -29,7 +29,7 @@ export const newEnquiry=asyncHandler(async(req,res)=>{
 
     if(!createdEnquiry) throw new ApiError(401,"failed fetching the created enquirty")
 
-    return res.status(200).json(new ApiResponse(200,enquiry,"enquiry ayi ha"))
+    return res.status(200).json(new ApiResponse(200,enquiry,"enquiry created succesfully"))
 })
 
 export const getAllEnquiries = asyncHandler(async (req, res) => {
