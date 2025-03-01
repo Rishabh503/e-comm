@@ -53,6 +53,12 @@ const userSchema=new mongoose.Schema(
                 type:Schema.Types.ObjectId,
                 ref:"Complaint"
             }
+        ],
+        bills:[
+            {
+                  type:Schema.Types.ObjectId,
+                ref:"User"
+            }
         ]
 },{timestamps:true}
 )

@@ -206,3 +206,10 @@ export const getCurrentUser=asyncHandler(async (req,res)=>{
     
     return res.status(200).json(new ApiResponse(200,user,"he is the use "))
 })
+
+
+export const getAllUser=asyncHandler(async(req,res)=>{
+    const users=await User.find().populate("complaints");
+    if(!users) throw new ApiError(404,"couldnt fetch users")
+    return res.status(200).json(new ApiResponse(200,users,"all users"))
+})

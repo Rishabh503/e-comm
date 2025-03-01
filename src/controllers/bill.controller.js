@@ -109,6 +109,8 @@ export const createNewBill=asyncHandler(async(req,res)=>{
     //     { new: true }
     // );
     
+    billedUser.bills=billedUser.bills.push(createdBill);
+    await billedUser.save({validateBeforeSave:false})
 
     // console.log("bill after save",bill)
     // console.log(typeof createAt,createAt,createAt instanceof Date)
