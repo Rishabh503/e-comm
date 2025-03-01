@@ -10,7 +10,7 @@ import { uploadOnCLoudinary } from "../utils/cloudinary.js"
 
 export const newEnquiry=asyncHandler(async(req,res)=>{
     const {name,contact,address,companyName,problem,requirements,status}=req.body
-
+    console.log(req.body)
     if(!problem && !requirements) throw new ApiError (401,"give one of problem or requirements")
 
     const enquiry=await Enquiry.create({
@@ -20,7 +20,7 @@ export const newEnquiry=asyncHandler(async(req,res)=>{
         companyName,
         problem,
         requirements,
-        status
+        status:"pending"
     })
 
     if(!enquiry) throw new ApiError(401,"failed creating  created enquirty")
