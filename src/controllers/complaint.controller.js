@@ -36,3 +36,13 @@ export const getAllComplaint=asyncHandler(async(req,res)=>{
     if(!allComplaints) throw new ApiError(404,"complaints founding failed")
     return res.status(200).json(new ApiResponse(200,allComplaints,"here are all complainsts"))
 })
+
+export const getOneComplaint=asyncHandler(async(req,res)=>{
+    const complaintId=req.params.complaintId;
+    if(!complaintId) throw new ApiError(401,"didnt recieve the complaint id")
+
+    const complain=await Complaint.findById(complaintId).populate("user");
+    if(!complain) throw new ApiError(404,"error extracting the complaint or complaint doesnt exisist");
+
+    return res.status(200).json(new ApiResponse(200,complain,"complain sent from backend"))
+})
