@@ -34,7 +34,7 @@ export const newComplaint=asyncHandler(async(req,res)=>{
 })
 
 export const getAllComplaint=asyncHandler(async(req,res)=>{
-    const allComplaints=await Complaint.find().populate("user").populate("visits").populate("followUps");
+    const allComplaints=await Complaint.find().populate("followUps").populate("visits").populate("user");
     if(!allComplaints) throw new ApiError(404,"complaints founding failed")
     return res.status(200).json(new ApiResponse(200,allComplaints,"here are all complainsts"))
 })
@@ -43,13 +43,15 @@ export const getOneComplaint=asyncHandler(async(req,res)=>{
     const complaintId=req.params.complaintId;
     if(!complaintId) throw new ApiError(401,"didnt recieve the complaint id")
 
-    const complain=await Complaint.findById(complaintId).populate("user");
+    const complain=await Complaint.findById(complaintId).populate("user").populate("visits").populate("followUps");
     if(!complain) throw new ApiError(404,"error extracting the complaint or complaint doesnt exisist");
 
     return res.status(200).json(new ApiResponse(200,complain,"complain sent from backend"))
 })
 
 export const newVisit=asyncHandler(async(req,res)=>{
+
+    console.log(req.body)
     const complaintId=req.params.complaintId;
     if(!complaintId) throw new ApiError(400,"id not received")
     const complaint=await Complaint.findById(complaintId).populate("user");
@@ -80,7 +82,8 @@ export const newVisit=asyncHandler(async(req,res)=>{
 
     console.log(createdVisit)
 
-    complaint.visits=complaint.visits.push(complaint);
+    complaint.visits=complaint.visits.push(createdVisit);
+    complaint.status=status;
     await complaint.save({validateBeforeSave:false})
 
     return res.status(200).json(new ApiResponse(200,complaint,"visit made succesfully"))
