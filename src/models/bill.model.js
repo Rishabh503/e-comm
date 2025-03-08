@@ -40,7 +40,8 @@ const billSchema=new mongoose.Schema({
         warranty:{
             type:Number,
             required:true
-        }
+        },
+        billUrl:String
 
 },{timestamps:true})
 

@@ -6,6 +6,7 @@ import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import mongoose from "mongoose";
+import { uploadOnCLoudinary } from "../utils/cloudinary.js";
 
 // export const createNewReminder=asyncHandler(async(_,res)=>{
 
@@ -82,8 +83,8 @@ export const createNewBill=asyncHandler(async(req,res)=>{
     const bill= await Bill.create({
         billTo:billedUser._id,
         amount:amount,
-        contact:contact,
-        email:email,
+        contact:billedUser.contact,
+        email:billedUser.email,
         category:category._id,
         status:status,
         warranty:warranty,
@@ -133,6 +134,14 @@ export const getAllBills=asyncHandler(async(req,res)=>{
     return res.status(200).json( new ApiResponse(200,allBills,"bills fetched done"))
 })
 
+export const getOneBill=asyncHandler(async(req,res)=>{
+    const billId=await req.params.billId;
+    if(!billId) throw new ApiError(401,"couldnot get the bill id")
+    const bill=await Bill.findById(billId).populate("billTo")
+    .populate("reminder")
+
+    return res.status(200).json(new ApiResponse(200,bill,"billl reciveid"))
+})
 
 export const deleteAllData = asyncHandler(async (req, res) => {
     await Bill.deleteMany({});
@@ -158,4 +167,45 @@ export const showBill=asyncHandler(async (req,res)=>{
     // console.log(bill);
     return res.status(200).json(new ApiResponse(200,bill,"bill got succesfully"))
     
+})
+export const userBill=asyncHandler(async (req,res)=>{
+    const userId=req.params.userId;
+    if(!userId) throw new ApiError(404,"user id not recived ")
+    const user = await User.findById(userId);
+    if(!user) throw new ApiError(404,"user not found ") 
+    
+    const {amount,date,category,status,warranty,remValue1}=req.body;
+    console.log(req.body)
+    if( !amount ||!date ||  !status || !warranty) {throw new ApiError(401,"all fields are required")}
+
+    const billLocalPath=await req.file?.path 
+    if(!billLocalPath) throw new ApiError(404,"error getting the local path of bill")
+
+    const billUpload=await uploadOnCLoudinary(billLocalPath)
+    if(!billUpload) throw new ApiError(402,"error uplaoding on cloud")
+
+    const bill=await Bill.create(
+        {
+            billTo:user,
+            amount:amount,
+            date:date,
+            contact:user.contact,
+            email:user.email,
+            status:status,
+            warranty:warranty,
+            billUrl:billUpload?.url || ""
+        }
+    )
+    const createdBill=await Bill.findById(bill._id)
+    if(!createdBill) throw new ApiError(402,"error making bill");
+    user.bills=user.bills.push(bill)
+    await user.save({validateBeforeSave:false})
+    const remindersArray=await createMultipleReminders(bill._id,date,status,remValue1,warranty);
+    bill.reminder.push(...remindersArray);
+    await bill.save();
+
+    return res.status(201).json(
+        new ApiResponse(200,bill,"bill has been made")
+    )
+
 })
