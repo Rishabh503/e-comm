@@ -14,7 +14,10 @@ const categorySchema=new mongoose.Schema(
         products:[{
             type:Schema.Types.ObjectId,
             ref:"Product"
-        }]
+        }],
+        posterUrl:{
+            type:String
+        }
 }
 ,{timestamps:true})
 

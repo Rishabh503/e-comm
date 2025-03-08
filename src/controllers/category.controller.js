@@ -2,6 +2,7 @@ import { Category } from "../models/category.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
+import { uploadOnCLoudinary } from "../utils/cloudinary.js";
 
 export const createCategory = asyncHandler(async (req,res)=>{
     
@@ -9,17 +10,27 @@ export const createCategory = asyncHandler(async (req,res)=>{
     if(name==="" || description ===""){
         throw new ApiError(401,"all fields are req")
     }
-
+    console.log(req.body)
     const existedCategory=await Category.findOne({name} )
   
     // console.log(allCategroies)
     
     if(existedCategory) throw new ApiError(400,"category already found")
-
+console.log(req.file)
+    const posterLocalPath=await req.file?.path;
+    console.log(posterLocalPath);
+    if(!posterLocalPath) throw new ApiError(404,"error poster local path not found ie not coming from frontend")
+    
+    
+    const posterUploadOnCloudinary=await uploadOnCLoudinary(posterLocalPath);
+    if(!posterUploadOnCloudinary) throw new ApiError(402,"error uploading photo to the backend of cloudinary")
+    // console.log(posterUploadOnCloudinary);
+    const posterUrl=posterUploadOnCloudinary.url || ""
    const category = await Category.create(
     {
-        name:name
-        ,description:description
+        name:name,
+        description:description,
+        posterUrl:posterUrl
     }
    )
 
